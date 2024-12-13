@@ -116,9 +116,6 @@ def compute_mAP(model, data_loader, device):
     mAP = np.mean(APs)
     return mAP, APs
 
-
-
-
 def compute_confusion_matrix(model, data_loader, device):
     model.eval()
     all_preds = []

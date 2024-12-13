@@ -79,5 +79,5 @@ visualize_outliers(top_outlier_indices, dataset)
 outlier_image_names = [dataset.image_names[idx] for idx in top_outlier_indices]
 
 for outlier in outlier_image_names:
-    # os.remove(os.path.join(truck_dir, outlier))
+    os.remove(os.path.join(truck_dir, outlier))
     print(f"Removed outlier image: {outlier}")
