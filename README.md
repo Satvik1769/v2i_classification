@@ -1,133 +1,85 @@
-# Dorra
+# Vehicle Detection Report
 
-## Overview
+## Abstract
+This report discusses the use of ResNet and CNN architectures for vehicle classification. ResNet achieved an accuracy of 80.28%, with strong precision, recall, and F1 scores, but misclassified vans as buses. CNN demonstrated slightly higher accuracy at 81.55%, performing well in detecting autorickshaws and cars but also struggled with van classification. The report elaborates on data cleaning, preprocessing, training, and the results obtained, along with proposed future work to enhance model performance.
 
-This project introduces a pipeline for detecting objects in images and generating detailed descriptions based on user-provided context. By leveraging advanced AI tools and models, we have developed an end-to-end solution for annotation, testing, and deployment. The pipeline simplifies the image processing workflow and ensures high-quality outputs.
+**CNN Results**
 
-## Input Image
+![cnn_result](image-1.png)
+---
+![cnn_2](image-2.png)
+---
 
-![Input](image-2.png)
+**Resnet Results**
 
-## Result
+![resnet_result](image-3.png)
+---
+![resnet_2](image-4.png)
 
-![Predicted](image-3.png)
+## Data Analysis and Cleaning
+The dataset was analyzed using Fastdup to identify similar and outlier images. Issues such as imbalanced classes (e.g., fewer samples for mini-bus, rickshaw, tractor) were observed, which could lead to overfitting. Broken or corrupted images were removed. Additional balancing of the dataset, particularly for underrepresented classes, was identified as a necessary improvement to enhance model reliability.
 
-## Features
+---
 
-1. **Context and Image-Based Detection and Description**:
+## Data Preprocessing
+Outliers and similar images were removed using Fastdup. Image size was resized to 180×180 pixels for uniformity, as specified in the training script. Mislabelled data in the truck class were detected and corrected using a ResNet-based script combined with CleanLab for automated outlier detection. Other classes had minimal mislabelling, simplifying preprocessing for those categories.
 
-   - The model detects objects in the image and combines them with user-provided context to generate comprehensive descriptions.
+---
 
-2. **Automated Image Installation Pipeline**:
+## Model Architecture
 
-   - Users can provide prompts to automatically install and process images through the pipeline.
+### ResNet (Pre-trained Model)
+ResNet is a powerful CNN-based architecture leveraging residual connections to prevent gradient vanishing, making it suitable for transfer learning. Its pre-trained nature allows efficient tuning for specific tasks. ResNet was chosen for its strong generalization ability and minimal overfitting on this dataset.
 
-3. **Annotation with Intel Geti**:
+![ResNet Architecture](https://www.researchgate.net/publication/349646156/figure/fig4/AS:995806349897731@1614430143429/The-architecture-of-ResNet-50-vd-a-Stem-block-b-Stage1-Block1-c-Stage1-Block2.png)
 
-   - Intel Geti was utilized for annotating images, testing the models, and fine-tuning performance.
+### CNN
+A custom CNN with five convolutional layers was employed. Each Conv2D layer was followed by batch normalization, dropout, ReLU activation, and max pooling. The layers were flattened and processed through fully connected layers for classification. CNN was selected for its effectiveness in image-related tasks and its ability to directly compare against ResNet.
 
-   ![Annotation](image-1.png)
+![CNN Architecture](CNN.png)
 
-4. **Deployment with OpenVINO**:
+---
 
-   - The pipeline deploys the trained model using OpenVINO, ensuring optimized inference performance.
+## Training and Experimentation
 
-5. **Hugging Face Integration**:
-   - Hugging Face's Llava v-1.57B model is integrated for generating detailed image descriptions based on the context.
+### ResNet
+ResNet exhibited less overfitting due to its pre-trained weights. The validation loss decreased from 1.7 to 0.75, with final training accuracy at 88.98%. A learning rate of 0.001 and weight decay of $10^{-4}$ were used to enhance generalization.
 
-## Workflow
+![ResNet Results](resnet_result.png)
 
-1. **Data Annotation**:
+### CNN
+CNN initially faced significant overfitting, with validation loss starting at 3.5 and ending at 1.089. To mitigate this, batch normalization, learning rate adjustments, and weight scheduling were applied. Training accuracy was 93.07%, with notable improvements in validation performance post-adjustments.
 
-   - Images are annotated using Intel Geti to create high-quality datasets.
-   - Annotations ensure accurate training and testing of models.
+![CNN Results](cnn_result.png)
 
-2. **Model Training and Testing**:
+---
 
-   - Models are trained on annotated data and evaluated for performance.
+## Results and Key Findings
 
-3. **Detection and Description Generation**:
+### ResNet Performance
+- **Metrics**: Accuracy: **81.55%**, Precision: **82.87%**, Recall: **81.55%**, F1 Score: **81.29%**.
+- **Confusion Matrix**:
 
-   - User inputs context and images.
-   - The model detects objects in the image and, powered by Lava1.57B, generates detailed descriptions.
+![ResNet Confusion Matrix](resnet_confusion.png)
 
-4. **Deployment**:
+Mini-bus exhibited reduced performance due to insufficient data, indicated by its high precision and F1 scores.
 
-   - The pipeline is deployed with OpenVINO for real-time and efficient inference.
+### CNN Performance
+- **Metrics**: Accuracy: **80.28%**, Precision: **80.78%**, Recall: **80.28%**, F1 Score: **79.95%**.
+- **Confusion Matrix**:
 
-5. **Automated Installation**:
-   - Users provide prompts to trigger the pipeline for processing and describing images.
+![CNN Confusion Matrix](cnn_confusion.png)
 
-## Technologies Used
+The tractor class demonstrated high precision and F1 scores due to its limited sample size.
 
-- **Intel Geti**:
+---
 
-  - For annotation and testing of image datasets.
+## Future Work
+To further improve the model:
 
-- **Hugging Face Lava1.57B**:
+1. **Dataset Enhancement**: Balance the dataset by augmenting underrepresented classes (e.g., mini-bus, rickshaw).
+2. **Experiment with Other Architectures**: Implement MobileNet and VGG to evaluate their performance against ResNet and CNN.
+3. **Advanced Data Augmentation**: Explore synthetic data generation to handle class imbalance.
+4. **Fine-Tuning Strategies**: Experiment with different optimization techniques and learning rate schedules to improve model convergence.
 
-  - Pre-trained language model for generating descriptions.
-
-- **OpenVINO**:
-  - Deployment framework for optimized model inference.
-
-## Use Cases
-
-1. **Accessibility for Visually Impaired Users**:
-
-   - Enable visually impaired users to understand images by providing detailed descriptions based on the image content and additional context.
-
-2. **E-Commerce and Product Descriptions**:
-
-   - Automatically generate product descriptions for e-commerce platforms by analyzing product images and user-provided specifications.
-
-3. **Digital Asset Management**:
-
-   - Assist in organizing and tagging large image datasets with descriptive metadata for efficient search and retrieval.
-
-4. **Medical Imaging**:
-
-   - Assist in describing medical images by highlighting detected elements and contextualizing them for reports.
-
-5. **Surveillance and Security**:
-
-   - Describe suspicious or detected objects in surveillance footage to assist in monitoring and analysis.
-
-## How to Use
-
-1. **Provide Context and Image**:
-
-   - Input a context statement and upload the image for processing.
-
-2. **Run the Pipeline**:
-
-   - Use the provided prompt to trigger the pipeline.
-
-3. **Receive Output**:
-
-   - The pipeline generates a detailed description based on the input.
-
-4. **Deploy and Test**:
-   - Models can be deployed using OpenVINO for further integration into applications.
-
-## Results
-
-- High-quality and contextually relevant image descriptions.
-- Streamlined and automated workflow for image annotation and processing.
-- Optimized performance through OpenVINO deployment.
-
-## Future Enhancements
-
-- Integration with additional pre-trained models for diverse use cases.
-- Enhancement of annotation tools for improved dataset quality.
-- Expansion of automated pipeline features for broader application.
-
-## Contributors
-
-- Karan Singh
-- Tanish
-- Samarth Pal
-- Satvik Manchanda
-
-#challenge #day1 #announcements
-#trackA #submission #aboutadventaihacks
+---
